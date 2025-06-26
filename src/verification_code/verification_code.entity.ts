@@ -1,9 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
-
-export enum VerificationType {
-  EMAIL = 'email',
-  PHONE = 'phone',
-}
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity('verification_codes')
 export class VerificationCode {
@@ -16,8 +16,8 @@ export class VerificationCode {
   @Column()
   code: string;
 
-  @Column({ type: 'enum', enum: VerificationType })
-  type: VerificationType;
+  @Column({ default: 'email' })
+  type: string;
 
   @Column({ name: 'is_used', default: false })
   isUsed: boolean;
@@ -27,4 +27,4 @@ export class VerificationCode {
 
   @Column({ name: 'expires_at', type: 'timestamp' })
   expiresAt: Date;
-} 
+}

@@ -9,14 +9,17 @@ import { ConfigService } from '@nestjs/config';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
 import { RegisterDto } from './dto/register.dto';
-import { log } from 'console';
+import { MailerService } from 'src/common/mailer/mailer.service';
+import { VerificationCodeService } from 'src/verification_code/verification_code.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private jwtService: JwtService,
-    private configService: ConfigService,
-    private userService: UserService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+    private readonly userService: UserService,
+    private readonly verifyCodeService: VerificationCodeService,
+    private readonly mailerService: MailerService,
   ) {}
 
   async login(loginDto: LoginDto) {
@@ -25,13 +28,22 @@ export class AuthService {
       throw new UnauthorizedException('User not found! Please register.');
     }
 
-    const isPasswordValid = await this.comparePassword(
+    const isPasswordValid = await bcrypt.compare(
       loginDto.password,
       user.passwordHash,
     );
     if (!isPasswordValid) {
       throw new UnauthorizedException(
         'Password is incorrect! Please try again.',
+      );
+    }
+
+    const checkVerifiedCode =
+      await this.verifyCodeService.checkUserVerifiedCode(user.id);
+
+    if (!checkVerifiedCode) {
+      throw new UnauthorizedException(
+        'User is not verified! Please verify your account.',
       );
     }
 
@@ -66,10 +78,18 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await this.userService.create({
+    const newUser = await this.userService.create({
       ...registerDto,
       passwordHash: hashedPassword,
     });
+
+    const verificationCode =
+      await this.verifyCodeService.createVerificationCode(newUser.id, 'email');
+
+    await this.mailerService.sendVerifyCode(
+      newUser.email,
+      verificationCode.code,
+    );
 
     return {
       message: 'Register successful. Please login to continue.',
@@ -98,9 +118,5 @@ export class AuthService {
     } catch (e) {
       throw new UnauthorizedException('Refresh token expired or invalid');
     }
-  }
-
-  comparePassword(plain: string, hashed: string): Promise<boolean> {
-    return bcrypt.compare(plain, hashed);
   }
 }

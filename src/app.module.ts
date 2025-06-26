@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import jwtConfig from './config/jwt.config';
 import { UserModule } from './user/user.module';
+import { VerificationCodeModule } from './verification_code/verification_code.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { UserModule } from './user/user.module';
     }),
     AuthModule,
     UserModule,
+    VerificationCodeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
