@@ -5,8 +5,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import jwtConfig from 'src/config/jwt.config';
-import { UserService } from 'src/user/user.service';
 import { UserModule } from 'src/user/user.module';
+import { MailerModule } from 'src/common/mailer/mailer.module';
+import { VerificationCodeModule } from 'src/verification_code/verification_code.module';
 
 @Module({
   imports: [
@@ -22,6 +23,8 @@ import { UserModule } from 'src/user/user.module';
       }),
     }),
     UserModule,
+    VerificationCodeModule,
+    MailerModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
