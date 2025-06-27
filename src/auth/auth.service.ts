@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -50,7 +51,6 @@ export class AuthService {
     const payload = {
       sub: user.id,
       email: user.email,
-      phoneNumber: user.phoneNumber,
     };
 
     return {
