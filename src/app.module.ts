@@ -34,7 +34,6 @@ import { ProductModule } from './product/product.module';
         },
         autoLoadEntities: true,
         synchronize: configService.get('NODE_ENV') === 'development',
-        logging: true, // Hiển thị SQL queries trong console
       }),
       inject: [ConfigService],
     }),
