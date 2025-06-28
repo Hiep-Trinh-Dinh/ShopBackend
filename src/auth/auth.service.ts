@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -12,6 +11,7 @@ import * as bcrypt from 'bcrypt';
 import { RegisterDto } from './dto/register.dto';
 import { MailerService } from 'src/common/mailer/mailer.service';
 import { VerificationCodeService } from 'src/verification_code/verification_code.service';
+import { ChangePasswordDto } from './dto/changePassword.dto';
 
 @Injectable()
 export class AuthService {
@@ -93,6 +93,32 @@ export class AuthService {
 
     return {
       message: 'Register successful. Please login to continue.',
+    };
+  }
+
+  async changePassword(id: string, data: ChangePasswordDto) {
+    const user = await this.userService.findById(id);
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+    const isCheckPassword = await bcrypt.compare(
+      data.currentPassword,
+      user.passwordHash,
+    );
+    if (!isCheckPassword) {
+      throw new BadRequestException('Current password is incorrect');
+    }
+    if (data.newPassword !== data.confirmPassword) {
+      throw new BadRequestException(
+        'New password and confirm password do not match',
+      );
+    }
+    const newPasswordHash = await bcrypt.hash(data.newPassword, 10);
+
+    await this.userService.updatePassword(user.id, newPasswordHash);
+
+    return {
+      message: 'Password changed successfully',
     };
   }
 
