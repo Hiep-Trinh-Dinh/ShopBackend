@@ -21,28 +21,15 @@ export class ProductService {
 
     const [products, total] = await this.productRepository
       .createQueryBuilder('product')
-      .leftJoinAndSelect('product.category', 'category')
-      .select([
-        'product.id',
-        'product.name',
-        'product.description',
-        'product.price',
-        'product.stockQuantity',
-        'product.categoryId',
-        'product.brand',
-        'product.discountPercent',
-        'product.imageUrl',
-        'product.createdAt',
-        'product.updatedAt',
-        'category.name'
-      ])
+      .leftJoin('product.category', 'category')
+      .addSelect('category.name', 'categoryName')
       .skip(skip)
       .take(limit)
       .getManyAndCount();
 
     const productResponses = products.map(product => ({
       ...product,
-      categoryName: product.category?.name
+      categoryName: (product as any).categoryName
     }));
 
     return {
@@ -57,21 +44,8 @@ export class ProductService {
   async findOne(id: number): Promise<ProductResponseDto | null> {
     const product = await this.productRepository
       .createQueryBuilder('product')
-      .leftJoinAndSelect('product.category', 'category')
-      .select([
-        'product.id',
-        'product.name',
-        'product.description',
-        'product.price',
-        'product.stockQuantity',
-        'product.categoryId',
-        'product.brand',
-        'product.discountPercent',
-        'product.imageUrl',
-        'product.createdAt',
-        'product.updatedAt',
-        'category.name'
-      ])
+      .leftJoin('product.category', 'category')
+      .addSelect('category.name', 'categoryName')
       .where('product.id = :id', { id })
       .getOne();
 
@@ -79,7 +53,7 @@ export class ProductService {
 
     return {
       ...product,
-      categoryName: product.category?.name
+      categoryName: (product as any).categoryName
     };
   }
 
@@ -89,21 +63,8 @@ export class ProductService {
 
     const [products, total] = await this.productRepository
       .createQueryBuilder('product')
-      .leftJoinAndSelect('product.category', 'category')
-      .select([
-        'product.id',
-        'product.name',
-        'product.description',
-        'product.price',
-        'product.stockQuantity',
-        'product.categoryId',
-        'product.brand',
-        'product.discountPercent',
-        'product.imageUrl',
-        'product.createdAt',
-        'product.updatedAt',
-        'category.name'
-      ])
+      .leftJoin('product.category', 'category')
+      .addSelect('category.name', 'categoryName')
       .where('product.categoryId = :categoryId', { categoryId })
       .skip(skip)
       .take(limit)
@@ -111,7 +72,7 @@ export class ProductService {
 
     const productResponses = products.map(product => ({
       ...product,
-      categoryName: product.category?.name
+      categoryName: (product as any).categoryName
     }));
 
     return {
