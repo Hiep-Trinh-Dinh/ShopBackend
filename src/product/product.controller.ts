@@ -1,14 +1,25 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, Query } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { Product } from './product.entity';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { PaginationDto } from './dto/pagination.dto';
 
 @Controller('products')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Get()
-  findAll(): Promise<Product[]> {
-    return this.productService.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.productService.findAll(paginationDto);
+  }
+
+  @Get('category/:categoryId')
+  findByCategory(
+    @Param('categoryId') categoryId: number,
+    @Query() paginationDto: PaginationDto
+  ) {
+    return this.productService.findByCategory(categoryId, paginationDto);
   }
 
   @Get(':id')
@@ -17,13 +28,13 @@ export class ProductController {
   }
 
   @Post()
-  create(@Body() data: Partial<Product>): Promise<Product> {
-    return this.productService.create(data);
+  create(@Body() createProductDto: CreateProductDto): Promise<Product> {
+    return this.productService.create(createProductDto);
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() data: Partial<Product>): Promise<Product | null> {
-    return this.productService.update(id, data);
+  update(@Param('id') id: number, @Body() updateProductDto: UpdateProductDto): Promise<Product | null> {
+    return this.productService.update(id, updateProductDto);
   }
 
   @Delete(':id')
