@@ -15,7 +15,9 @@ export class ProductService {
     private readonly productRepository: Repository<Product>,
   ) {}
 
-  async findAll(paginationDto: PaginationDto): Promise<PaginationResponseDto<ProductResponseDto>> {
+  async findAll(
+    paginationDto: PaginationDto,
+  ): Promise<PaginationResponseDto<ProductResponseDto>> {
     const { page = 1, limit = 8 } = paginationDto;
     const skip = (page - 1) * limit;
 
@@ -27,9 +29,9 @@ export class ProductService {
       .take(limit)
       .getManyAndCount();
 
-    const productResponses = products.map(product => ({
+    const productResponses = products.map((product) => ({
       ...product,
-      categoryName: (product as any).categoryName
+      categoryName: (product as any).categoryName,
     }));
 
     return {
@@ -37,7 +39,7 @@ export class ProductService {
       total,
       page,
       limit,
-      totalPages: Math.ceil(total / limit)
+      totalPages: Math.ceil(total / limit),
     };
   }
 
@@ -53,11 +55,14 @@ export class ProductService {
 
     return {
       ...product,
-      categoryName: (product as any).categoryName
+      categoryName: (product as any).categoryName,
     };
   }
 
-  async findByCategory(categoryId: number, paginationDto: PaginationDto): Promise<PaginationResponseDto<ProductResponseDto>> {
+  async findByCategory(
+    categoryId: number,
+    paginationDto: PaginationDto,
+  ): Promise<PaginationResponseDto<ProductResponseDto>> {
     const { page = 1, limit = 8 } = paginationDto;
     const skip = (page - 1) * limit;
 
@@ -70,9 +75,9 @@ export class ProductService {
       .take(limit)
       .getManyAndCount();
 
-    const productResponses = products.map(product => ({
+    const productResponses = products.map((product) => ({
       ...product,
-      categoryName: (product as any).categoryName
+      categoryName: (product as any).categoryName,
     }));
 
     return {
@@ -80,7 +85,7 @@ export class ProductService {
       total,
       page,
       limit,
-      totalPages: Math.ceil(total / limit)
+      totalPages: Math.ceil(total / limit),
     };
   }
 
@@ -89,7 +94,10 @@ export class ProductService {
     return this.productRepository.save(product);
   }
 
-  async update(id: number, updateProductDto: UpdateProductDto): Promise<Product | null> {
+  async update(
+    id: number,
+    updateProductDto: UpdateProductDto,
+  ): Promise<Product | null> {
     await this.productRepository.update(id, updateProductDto);
     return this.productRepository.findOneBy({ id });
   }
@@ -97,4 +105,4 @@ export class ProductService {
   async remove(id: number): Promise<void> {
     await this.productRepository.delete(id);
   }
-} 
+}

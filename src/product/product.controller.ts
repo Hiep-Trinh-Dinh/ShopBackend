@@ -1,13 +1,30 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Delete,
+  Query,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
 import { ProductService } from './product.service';
 import { Product } from './product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PaginationDto } from './dto/pagination.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UploadService } from 'src/upload/upload.service';
+import { File } from 'multer';
 
 @Controller('products')
 export class ProductController {
-  constructor(private readonly productService: ProductService) {}
+  constructor(
+    private readonly productService: ProductService,
+    private readonly uploadService: UploadService,
+  ) {}
 
   @Get()
   findAll(@Query() paginationDto: PaginationDto) {
@@ -17,7 +34,7 @@ export class ProductController {
   @Get('category/:categoryId')
   findByCategory(
     @Param('categoryId') categoryId: number,
-    @Query() paginationDto: PaginationDto
+    @Query() paginationDto: PaginationDto,
   ) {
     return this.productService.findByCategory(categoryId, paginationDto);
   }
@@ -28,12 +45,29 @@ export class ProductController {
   }
 
   @Post()
-  create(@Body() createProductDto: CreateProductDto): Promise<Product> {
+  @UseInterceptors(FileInterceptor('image'))
+  async create(
+    @UploadedFile() file: File,
+    @Body() createProductDto: CreateProductDto,
+  ): Promise<Product> {
+    if (file) {
+      const result = await this.uploadService.uploadImage(file);
+      createProductDto.imageUrl = result.secure_url;
+    }
     return this.productService.create(createProductDto);
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() updateProductDto: UpdateProductDto): Promise<Product | null> {
+  @UseInterceptors(FileInterceptor('image'))
+  async update(
+    @Param('id') id: number,
+    @UploadedFile() file: File,
+    @Body() updateProductDto: UpdateProductDto,
+  ): Promise<Product | null> {
+    if (file) {
+      const result = await this.uploadService.uploadImage(file);
+      updateProductDto.imageUrl = result.secure_url;
+    }
     return this.productService.update(id, updateProductDto);
   }
 
@@ -41,4 +75,4 @@ export class ProductController {
   remove(@Param('id') id: number): Promise<void> {
     return this.productService.remove(id);
   }
-} 
+}

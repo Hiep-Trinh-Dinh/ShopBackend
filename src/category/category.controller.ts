@@ -1,11 +1,26 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Delete,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UploadService } from 'src/upload/upload.service';
 
 @Controller('categories')
 export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) {}
+  constructor(
+    private readonly categoryService: CategoryService,
+    private readonly uploadService: UploadService,
+  ) {}
 
   @Get()
   findAll() {
@@ -18,12 +33,29 @@ export class CategoryController {
   }
 
   @Post()
-  create(@Body() createCategoryDto: CreateCategoryDto) {
+  @UseInterceptors(FileInterceptor('image'))
+  async create(
+    @UploadedFile() file: File,
+    @Body() createCategoryDto: CreateCategoryDto,
+  ) {
+    if (file) {
+      const result = await this.uploadService.uploadImage(file);
+      createCategoryDto.imageUrl = result.secure_url;
+    }
     return this.categoryService.create(createCategoryDto);
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() updateCategoryDto: UpdateCategoryDto) {
+  @UseInterceptors(FileInterceptor('image'))
+  async update(
+    @Param('id') id: number,
+    @UploadedFile() file: File,
+    @Body() updateCategoryDto: UpdateCategoryDto,
+  ) {
+    if (file) {
+      const result = await this.uploadService.uploadImage(file);
+      updateCategoryDto.imageUrl = result.secure_url;
+    }
     return this.categoryService.update(id, updateCategoryDto);
   }
 
@@ -31,4 +63,4 @@ export class CategoryController {
   remove(@Param('id') id: number) {
     return this.categoryService.remove(id);
   }
-} 
+}
