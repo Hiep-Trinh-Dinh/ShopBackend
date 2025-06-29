@@ -18,7 +18,7 @@ export class UserController {
   async updateProfile(
     @Param('id') id: string,
     @Body() data: UpdateProfileDto,
-  ): Promise<User> {
+  ): Promise<User | null> {
     return this.userService.updateProfile(id, data);
   }
 }

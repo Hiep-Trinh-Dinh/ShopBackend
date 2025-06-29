@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('categories')
 export class Category {
@@ -10,4 +10,7 @@ export class Category {
 
   @Column({ name: 'parent_id', nullable: true })
   parentId?: number;
-} 
+
+  @Column({ name: 'image_url' })
+  imageUrl: string;
+}
