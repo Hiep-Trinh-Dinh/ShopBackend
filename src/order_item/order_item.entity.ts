@@ -16,4 +16,4 @@ export class OrderItem {
 
   @Column({ name: 'unit_price', type: 'numeric', precision: 10, scale: 2 })
   unitPrice: number;
-} 
+}

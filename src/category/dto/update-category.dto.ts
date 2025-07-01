@@ -10,8 +10,8 @@ import {
 export class UpdateCategoryDto {
   @IsOptional()
   @IsString()
-  @MinLength(2, { message: 'Tên danh mục phải có ít nhất 2 ký tự' })
-  @MaxLength(100, { message: 'Tên danh mục không được quá 100 ký tự' })
+  @MinLength(2, { message: 'Category name must be at least 2 characters' })
+  @MaxLength(100, { message: 'Category name cannot exceed 100 characters' })
   name?: string;
 
   @IsOptional()

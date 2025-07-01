@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Category } from '../category/category.entity';
 
 @Entity('products')
@@ -18,13 +26,18 @@ export class Product {
   @Column({ name: 'stock_quantity' })
   stockQuantity: number;
 
-  @Column({ name: 'category_id', nullable: true })
-  categoryId?: number;
+  @Column({ name: 'category_id' })
+  categoryId: number;
 
   @Column({ nullable: true })
   brand?: string;
 
-  @Column('numeric', { precision: 5, scale: 2, nullable: true, name: 'discount_percent' })
+  @Column('numeric', {
+    precision: 5,
+    scale: 2,
+    nullable: true,
+    name: 'discount_percent',
+  })
   discountPercent?: number;
 
   @Column({ name: 'image_url', nullable: true })
@@ -36,7 +49,7 @@ export class Product {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @ManyToOne(() => Category, { nullable: true })
+  @ManyToOne(() => Category, { nullable: false })
   @JoinColumn({ name: 'category_id' })
-  category?: Category;
-} 
+  category: Category;
+}

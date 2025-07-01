@@ -18,6 +18,8 @@ import { PaginationDto } from './dto/pagination.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from 'src/upload/upload.service';
 import { File } from 'multer';
+import { ProductResponseDto } from './dto/product-response.dto';
+import { PaginationResponseDto } from './dto/pagination-response.dto';
 
 @Controller('products')
 export class ProductController {
@@ -35,12 +37,12 @@ export class ProductController {
   findByCategory(
     @Param('categoryId') categoryId: number,
     @Query() paginationDto: PaginationDto,
-  ) {
+  ): Promise<PaginationResponseDto<ProductResponseDto>> {
     return this.productService.findByCategory(categoryId, paginationDto);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number): Promise<Product | null> {
+  findOne(@Param('id') id: number): Promise<ProductResponseDto | null> {
     return this.productService.findOne(id);
   }
 

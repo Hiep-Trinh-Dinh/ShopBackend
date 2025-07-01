@@ -5,10 +5,10 @@ export class ProductResponseDto {
   price: number;
   stockQuantity: number;
   categoryId?: number;
-  categoryName?: string;
+  category?: object;
   brand?: string;
   discountPercent?: number;
   imageUrl?: string;
   createdAt: Date;
   updatedAt: Date;
-} 
+}
