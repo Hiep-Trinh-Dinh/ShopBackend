@@ -9,6 +9,7 @@ import { UserModule } from './user/user.module';
 import { VerificationCodeModule } from './verification_code/verification_code.module';
 import { CategoryModule } from './category/category.module';
 import { ProductModule } from './product/product.module';
+import { ShoppingCartItemModule } from './shopping_cart_item/shopping_cart_item.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { ProductModule } from './product/product.module';
     VerificationCodeModule,
     CategoryModule,
     ProductModule,
+    ShoppingCartItemModule,
   ],
   controllers: [AppController],
   providers: [AppService],

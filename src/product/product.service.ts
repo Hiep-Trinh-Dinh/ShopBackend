@@ -21,21 +21,14 @@ export class ProductService {
     const { page = 1, limit = 8 } = paginationDto;
     const skip = (page - 1) * limit;
 
-    const [products, total] = await this.productRepository
-      .createQueryBuilder('product')
-      .leftJoin('product.category', 'category')
-      .addSelect('category.name', 'categoryName')
-      .skip(skip)
-      .take(limit)
-      .getManyAndCount();
-
-    const productResponses = products.map((product) => ({
-      ...product,
-      categoryName: (product as any).categoryName,
-    }));
+    const [products, total] = await this.productRepository.findAndCount({
+      relations: ['category'],
+      skip,
+      take: limit,
+    });
 
     return {
-      data: productResponses,
+      data: products,
       total,
       page,
       limit,
@@ -44,19 +37,14 @@ export class ProductService {
   }
 
   async findOne(id: number): Promise<ProductResponseDto | null> {
-    const product = await this.productRepository
-      .createQueryBuilder('product')
-      .leftJoin('product.category', 'category')
-      .addSelect('category.name', 'categoryName')
-      .where('product.id = :id', { id })
-      .getOne();
+    const product = await this.productRepository.findOne({
+      where: { id },
+      relations: ['category'],
+    });
 
     if (!product) return null;
 
-    return {
-      ...product,
-      categoryName: (product as any).categoryName,
-    };
+    return product;
   }
 
   async findByCategory(
@@ -66,22 +54,15 @@ export class ProductService {
     const { page = 1, limit = 8 } = paginationDto;
     const skip = (page - 1) * limit;
 
-    const [products, total] = await this.productRepository
-      .createQueryBuilder('product')
-      .leftJoin('product.category', 'category')
-      .addSelect('category.name', 'categoryName')
-      .where('product.categoryId = :categoryId', { categoryId })
-      .skip(skip)
-      .take(limit)
-      .getManyAndCount();
-
-    const productResponses = products.map((product) => ({
-      ...product,
-      categoryName: (product as any).categoryName,
-    }));
+    const [products, total] = await this.productRepository.findAndCount({
+      where: { categoryId },
+      relations: ['category'],
+      skip,
+      take: limit,
+    });
 
     return {
-      data: productResponses,
+      data: products,
       total,
       page,
       limit,
