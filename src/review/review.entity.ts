@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { User } from '../user/user.entity';
+import { Product } from '../product/product.entity';
 
 @Entity('reviews')
 export class Review {
@@ -19,4 +21,12 @@ export class Review {
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
+  @ManyToOne(() => Product)
+  @JoinColumn({ name: 'product_id' })
+  product: Product;
 } 

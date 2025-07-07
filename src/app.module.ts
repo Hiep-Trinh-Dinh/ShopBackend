@@ -10,6 +10,8 @@ import { VerificationCodeModule } from './verification_code/verification_code.mo
 import { CategoryModule } from './category/category.module';
 import { ProductModule } from './product/product.module';
 import { ShoppingCartItemModule } from './shopping_cart_item/shopping_cart_item.module';
+import { WishlistModule } from './wishlist/wishlist.module';
+import { ReviewModule } from './review/review.module';
 
 @Module({
   imports: [
@@ -44,6 +46,8 @@ import { ShoppingCartItemModule } from './shopping_cart_item/shopping_cart_item.
     CategoryModule,
     ProductModule,
     ShoppingCartItemModule,
+    WishlistModule,
+    ReviewModule,
   ],
   controllers: [AppController],
   providers: [AppService],
