@@ -5,6 +5,7 @@ import { Review } from './review.entity';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { ReviewResponseDto } from './dto/review-response.dto';
+import { PaginationDto } from './dto/pagination.dto';
 
 @Injectable()
 export class ReviewService {
@@ -13,55 +14,75 @@ export class ReviewService {
     private readonly reviewRepository: Repository<Review>,
   ) {}
 
-  async findAll(): Promise<ReviewResponseDto[]> {
-    const reviews = await this.reviewRepository.find({
+  async findAll(paginationDto: PaginationDto) {
+    const { page = 1, limit = 4 } = paginationDto;
+    const skip = (page - 1) * limit;
+    const [reviews, total] = await this.reviewRepository.findAndCount({
       relations: ['user', 'product', 'product.category'],
+      skip,
+      take: limit,
+      order: { createdAt: 'DESC' }
     });
-
-    return reviews.map(review => ({
-      id: review.id,
-      userId: review.userId,
-      productId: review.productId,
-      rating: review.rating,
-      comment: review.comment,
-      createdAt: review.createdAt,
-      user: review.user ? {
-        id: review.user.id,
-        fullName: review.user.fullName,
-        email: review.user.email,
-      } : undefined,
-      product: review.product ? {
-        id: review.product.id,
-        name: review.product.name,
-        categoryName: review.product.category?.name,
-      } : undefined,
-    }));
+    return {
+      data: reviews.map(review => ({
+        id: review.id,
+        userId: review.userId,
+        productId: review.productId,
+        rating: review.rating,
+        comment: review.comment,
+        createdAt: review.createdAt,
+        user: review.user ? {
+          id: review.user.id,
+          fullName: review.user.fullName,
+          email: review.user.email,
+        } : undefined,
+        product: review.product ? {
+          id: review.product.id,
+          name: review.product.name,
+          categoryName: review.product.category?.name,
+        } : undefined,
+      })),
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    };
   }
 
-  async findByProduct(productId: number): Promise<ReviewResponseDto[]> {
-    const reviews = await this.reviewRepository.find({
+  async findByProduct(productId: number, paginationDto: PaginationDto) {
+    const { page = 1, limit = 4 } = paginationDto;
+    const skip = (page - 1) * limit;
+    const [reviews, total] = await this.reviewRepository.findAndCount({
       where: { productId },
       relations: ['user', 'product', 'product.category'],
+      skip,
+      take: limit,
+      order: { createdAt: 'DESC' }
     });
-
-    return reviews.map(review => ({
-      id: review.id,
-      userId: review.userId,
-      productId: review.productId,
-      rating: review.rating,
-      comment: review.comment,
-      createdAt: review.createdAt,
-      user: review.user ? {
-        id: review.user.id,
-        fullName: review.user.fullName,
-        email: review.user.email,
-      } : undefined,
-      product: review.product ? {
-        id: review.product.id,
-        name: review.product.name,
-        categoryName: review.product.category?.name,
-      } : undefined,
-    }));
+    return {
+      data: reviews.map(review => ({
+        id: review.id,
+        userId: review.userId,
+        productId: review.productId,
+        rating: review.rating,
+        comment: review.comment,
+        createdAt: review.createdAt,
+        user: review.user ? {
+          id: review.user.id,
+          fullName: review.user.fullName,
+          email: review.user.email,
+        } : undefined,
+        product: review.product ? {
+          id: review.product.id,
+          name: review.product.name,
+          categoryName: review.product.category?.name,
+        } : undefined,
+      })),
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    };
   }
 
   async findByUser(userId: string): Promise<ReviewResponseDto[]> {
