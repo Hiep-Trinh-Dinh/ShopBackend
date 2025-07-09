@@ -1,20 +1,24 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, Query } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
+import { PaginationDto } from './dto/pagination.dto';
 
 @Controller('reviews')
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
 
   @Get()
-  findAll() {
-    return this.reviewService.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.reviewService.findAll(paginationDto);
   }
 
   @Get('product/:productId')
-  findByProduct(@Param('productId') productId: number) {
-    return this.reviewService.findByProduct(productId);
+  findByProduct(
+    @Param('productId') productId: number,
+    @Query() paginationDto: PaginationDto
+  ) {
+    return this.reviewService.findByProduct(productId, paginationDto);
   }
 
   @Get('user/:userId')
